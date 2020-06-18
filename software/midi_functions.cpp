@@ -13,6 +13,8 @@ MIDI.setHandleProgramChange(ProgramFunction);   //byte channel, byte number
 
 void CCFunction(byte channel, byte number, byte value){
 
+
+
 if(channel == constants::midichan){
 
 int midiexp{};
@@ -55,23 +57,15 @@ else{   //different midi channel
   //do nothing
 }
 
-//send CC message
+}
 
-//MIDI.sendControlChange(number,value,channel);
-
-Serial1.write(constants::CC_cmd + channel - 1);
-Serial1.write(number);
-Serial1.write(value);
+void ProgramFunction(byte number, byte channel){
 
 }
 
 void checkMidi()
 {
-  MIDI.read();
-}
+  
+MIDI.read();
 
-void ProgramFunction(byte number, byte channel){
-  //MIDI.sendProgramChange(number,channel);
-Serial1.write(constants::PC_cmd + channel - 1);
-Serial1.write(number);
 }
