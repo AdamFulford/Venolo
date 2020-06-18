@@ -1,7 +1,7 @@
 # Venolo
 Stereo Tremolo Pedal with 3 assignable LFOs, tap tempo and midi control
 
-2 seperate V2164 VCA channels controlled digitally using a Teensy 3.2 microcontroller and 4922 DAC.
+2 seperate V2164 VCA channels controlled digitally using a Teensy 3.2 microcontroller and MCP4922 DAC.
 Can be configured with jumpers on bottom of main PCB to be mono -> stereo, or full stereo. Low noise opamps with a fully analog audio path, and internally boosted rails (+/- 12v) give huge headroom before distortion, so the Venolo can also be used with line level and eurorack synths.
 
 Runs off a standard guitar pedal 9V DC power supply with centre ground 2.1mm barrel connector. Approximate current consumption is 350mA.
