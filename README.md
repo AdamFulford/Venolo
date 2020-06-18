@@ -34,14 +34,14 @@ LFO3 can be assigned to 1 of 2 functions (or turned off), by toggling the LFO3 a
 
 LFO3 controls:
 - Frequency (range as per LFO2)
-- Amplitude (as per LFO2)
-- waveshape (as per LFO2)
+- Amplitude (as per LFO1 & LFO2)
+- Waveshape (as per LFO2)
 
 Manual controls:
 
 Volume - sets the overall maximum level of the output when the pedal is engaged. Fully clockwise is a slight above unity gain. Fully anti-clockwise corresponds to almost no output signal (usually below noise level of typical guitar amps).
 
-Pan - sets the average pan position in the stereo field.
+Pan - sets the average pan position in the stereo field when the pedal is engaged.
 
 Midi assign: the midi assign button can be used to map multiple controls to respond to an expression value received on CC#1 (channel 5). Mapping controls works like this:
 
