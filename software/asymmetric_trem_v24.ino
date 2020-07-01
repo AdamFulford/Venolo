@@ -1084,7 +1084,7 @@ checkBoth();
 
 //Debug LFO shapes - delay will mess up midi input!
 
-
+/*
 Serial.println(LFO2);
 Serial.print(",");
 Serial.print(LFO3);
@@ -1093,6 +1093,6 @@ Serial.println(LFO1);
 
 delay(5);
 
-
+*/
 
 }
