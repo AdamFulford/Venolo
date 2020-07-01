@@ -4,8 +4,8 @@
 //pin assignments
 constexpr int engage_LED = 2;
 //int midi_LED = 3;
-constexpr int PWM_L = 4;
-constexpr int PWM_R = 3;
+constexpr int PWM_L = 3;
+constexpr int PWM_R = 4;
 constexpr int midi_LED = 28;
 constexpr int LFO2Vol_LED = 29;
 constexpr int LFO2Pan_LED = 5;

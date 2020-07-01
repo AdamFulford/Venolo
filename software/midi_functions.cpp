@@ -1,7 +1,6 @@
 
 #include "midi_functions.h"
 
-//MIDI_CREATE_INSTANCE(HardwareSerial, Serial1, MIDI);
 MIDI_CREATE_INSTANCE(HardwareSerial, Serial1, MIDI);
 
 void MidiInit()
@@ -26,29 +25,41 @@ int midiexp{};
             for (int i=0; i < 9; i++){
     
                 if(midi_matrix[i][0] == midi_matrix[i][1]){   //if min and max the same, i.e. parameter NOT set
-                //skip
+                  //skip
                 }
                 else{     // parameter set
-                midi_matrix[i][2] = map(midiexp,0,constants::in_max,midi_matrix[i][0],midi_matrix[i][1]);
+                  midi_matrix[i][2] = map(midiexp,0,constants::in_max,midi_matrix[i][0],midi_matrix[i][1]);
                 }
             }
     
     }
-    else if(number == constants::miditap){
+    if(number == constants::miditap){
     
       if(value > 63){    //over half
-        
+       tapSpeed = 1;
        tap_tempo();
       }
                       
       if(value <= 63){    //under half
         //do nothing
   
-                        }
+      }
     }
 
+    else if(number == constants::miditap_dbl){
+
+      if(value > 63){    //over half
+       tapSpeed = 2;
+       tap_tempo();
+      }
+                      
+      if(value <= 63){    //under half
+        //do nothing
+      }
+    }
+ 
     
-    else{
+else{
       //do nothing
     }
 }

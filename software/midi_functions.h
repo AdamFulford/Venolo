@@ -11,7 +11,10 @@ void CCFunction(byte channel, byte number, byte value);
 void ProgramFunction(byte number, byte channel);
 void MidiInit();
 void checkMidi();
+
+
 extern int midi_matrix[9][4];
+extern int tapSpeed;
 
 
 #endif
