@@ -19,42 +19,25 @@
         //re-calculate values for DACupdate()
         freq1scaled = tapSpeed / (tap_length/1000.0);
 
-        updatefreq1(freq1scaled);
-        /*
-        period1 = constants::samplerate/(freq1scaled);
-        period1a = period1 * swayScaled;
-
-        //period1b = period1 * (1 - swayScaled);
-        period1b = period1 - period1a;
-        wave1aInc = float(constants::waveLength - 1)/period1a;
-        wave1bInc = float(constants::waveLength - 1)/period1b;
-
-        if(freqMode ==1){
-          freq2scaled = freq1scaled * ratio2;
-          period2 = constants::samplerate/(2 * freq2scaled);
-          wave2Inc = float(constants::waveLength - 1)/period2; //float 
-    
-          freq3scaled = freq1scaled * ratio3;
-          period3 = constants::samplerate/(2* freq3scaled);
-          wave3Inc = float(constants::waveLength - 1)/period3;
-
-
-        }
-        */
-        
-        last_tap_length = tap_length;
-
          if(freqMode ==0){
+           //reset LFO1 to peak and direction to down
           t1 = 0;     
           direction1 = constants::down; 
+          updatefreq1(freq1scaled);
          }
-        //reset LFO1 to peak and direction to down
+       
 
-
-        else if(freqMode == 1){
-          t1=t2=t3=0;
+         else if(freqMode == 1){
+          //reset all LFOs to peak and direction to down
+          t=t1=t2=t3=0;
           direction1 = direction2 = direction3 = constants::down;
+          updatefreq1Mode1(freq1scaled);
         }
+        
+
+        last_tap_length = tap_length;
+
+
 
       }
       else{ //flag not set
@@ -62,50 +45,40 @@
         //if tap_length greater than tolerance then set tap_flag (to say this is first tap) and reset LFO (but do not change tempo)
         if(tap_length >= (constants::tap_tolerance * last_tap_length)){  
           tap_flag = true;
-          
+
           //reset LFO1 to peak and direction to down
+          if(freqMode ==0){
           t1 = 0;
           direction1 = constants::down; 
+          }
+
+          else if(freqMode ==1){
+          t=t1=t2=t3=0;
+          direction1 = direction2 = direction3 = constants::down;
+          }
+          
+
         }
         else{
           //re-calculate values for DACupdate()
           freq1scaled = tapSpeed / (tap_length/1000.0);
           
-          updatefreq1(freq1scaled);
-          /*
-          period1 = constants::samplerate/(freq1scaled);
-          period1a = period1 * swayScaled;
-          //period1b = period1 * (1 - swayScaled);
-          period1b = period1 - period1a;
-          wave1aInc = float(constants::waveLength - 1)/period1a;
-          wave1bInc = float(constants::waveLength - 1)/period1b;
-
-          if(freqMode ==1){
-            freq2scaled = freq1scaled * ratio2;
-            period2 = constants::samplerate/(2 * freq2scaled);
-            wave2Inc = float(constants::waveLength - 1)/period2; //float 
-      
-            freq3scaled = freq1scaled * ratio3;
-            period3 = constants::samplerate/(2* freq3scaled);
-            wave3Inc = float(constants::waveLength - 1)/period3;
-
-          }
-          */
-
-          //update last_tap_length
-          last_tap_length = tap_length;
-          
-         if(freqMode ==0){
+        if(freqMode == 0)
+        {
           t1 = 0;     
           direction1 = constants::down; 
-         }
-        //reset LFO1 to peak and direction to down
-
-
-        else if(freqMode == 1){
-          t1=t2=t3=0;
-          direction1 = direction2 = direction3 = constants::down;
+          updatefreq1(freq1scaled);
         }
+        
+        else if(freqMode ==1)
+        {
+          t=t1=t2=t3=0;
+          direction1 = direction2 = direction3 = constants::down;
+          updatefreq1Mode1(freq1scaled);
+        }
+        //update last_tap_length
+        last_tap_length = tap_length;
+
         }
 
       }
@@ -122,7 +95,7 @@
 
 
         else if(freqMode == 1){
-          t1=t2=t3=0;
+          t=t1=t2=t3=0;
           direction1 = direction2 = direction3 = constants::down;
         }
 

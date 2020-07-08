@@ -18,6 +18,7 @@ extern float wave1aInc;
 extern float wave1bInc;
 extern float wave2Inc;
 extern float wave3Inc;
+extern long t;
 extern long t1;
 extern long t2;
 extern long t3;

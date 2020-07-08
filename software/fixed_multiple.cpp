@@ -78,35 +78,33 @@ int changeMode(int currentmode)
 
      //Derive freq1scaled from pot value:
      float freq1scaled{};
-     float freq2scaled{};
-     float freq3scaled{};
+     int freq2{};
+     int freq3{};
+     
      //read pot and scale with non-linear coeffs to get freq1scaled:
      freq1scaled = Scale(analogRead(freq1_pot),constants::in_max,constants::a_freq,constants::b_freq);
      //scale for frequency range:
      freq1scaled = (freq1scaled - constants::in_min) * (constants::freq1_max - constants::freq1_min) / (constants::in_max - constants::in_min) + constants::freq1_min;
-     Serial.print("freq1scaled: ");
-     Serial.println(freq1scaled);
+     Mode1Period = (1.0/ (4.0 * freq1scaled * global_mult )) * 1.0E6; //microseconds
+
+     //sway settings
+     //up
+     LFO1aMult = constants::swayUpMults[map(analogRead(sway_pot),constants::in_min,constants::in_max,0,constants::numSwaySettings - 1)];
+     LFO1aDiv = constants::swayUpDivs[map(analogRead(sway_pot),constants::in_min,constants::in_max,0,constants::numSwaySettings - 1)];
+
+      //down
+     LFO1bMult = constants::swayDwnMults[map(analogRead(sway_pot),constants::in_min,constants::in_max,0,constants::numSwaySettings - 1)];
+     LFO1bDiv = constants::swayDwnDivs[map(analogRead(sway_pot),constants::in_min,constants::in_max,0,constants::numSwaySettings - 1)]; 
      
      //read pots to get ratios for LFO2 and LFO3:
-     ratio2 = constants::ratios[map(analogRead(freq2_pot),constants::in_min,constants::in_max,0,constants::numRatios - 1)];
-     ratio3 = constants::ratios[map(analogRead(freq3_pot),constants::in_min,constants::in_max,0,constants::numRatios - 1)];
-     Serial.print("ratio2: ");
-     Serial.println(ratio2);
-     Serial.print("ratio3: ");
-     Serial.println(ratio3);
+     freq2 = map(analogRead(freq2_pot),0,constants::in_max,0,constants::in_max);
+     freq3 = map(analogRead(freq3_pot),0,constants::in_max,0,constants::in_max);
 
-     //calculate freq2scaled and freq3scaled:
-     freq2scaled = freq1scaled * ratio2;
-     freq3scaled = freq1scaled * ratio3;
-     Serial.print("freq2scaled: ");
-     Serial.println(freq2scaled);
-     Serial.print("freq3scaled: ");
-     Serial.println(freq3scaled);
-     
      //update LFO2 and LFO3 period and waveinc:
-     updatefreq1(freq1scaled);
-     updatefreq2(freq2scaled);
-     updatefreq3(freq3scaled);
+     updatefreq1Mode1(freq1scaled);
+     updatefreq2Mode1(freq2);
+     updatefreq3Mode1(freq3);
+     
 
 
 

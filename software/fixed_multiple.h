@@ -20,9 +20,14 @@ extern bool direction1;
 extern bool direction2;
 extern bool direction3;
 
-extern float ratio2;
-extern float ratio3;
+extern int LFO1aMult;
+extern int LFO1aDiv;
+
+extern int LFO1bMult;
+extern int LFO1bDiv;
 
 extern bool IS_ON;
+
+extern float global_mult;
 
 #endif

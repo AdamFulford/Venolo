@@ -8,6 +8,13 @@ void updatefreq1(float freq1scaled);
 void updatefreq2(float freq2scaled);
 void updatefreq3(float freq3scaled);
 
+void updatefreq1Mode1(float freq1scaled);
+void updatefreq2Mode1(int freq2);
+void updatefreq3Mode1(int freq3);
+
+extern void updateInterval();
+
+
 extern long period1;   //used in checkFreq() and checkSway() and checkTap()
 extern long period1a;  //period going up used in checkFreq() and checkSway() checkTap() and DACupdate()
 extern long period1b;  //period going down used in checkFreq() and checkSway() checkTap() and DACupdate()
@@ -20,9 +27,18 @@ extern float wave2Inc;
 extern float wave3Inc; 
 
 extern int freqMode;  //0 = normal, 1 = fixed multiple.
-extern float ratio2;  //ratio of freq2 / freq1 used in fixed multiple mode
-extern float ratio3;  //ratio of freq3 / freq1 used in fixed multiple mode
 
+//extern float ratio2;  //ratio of freq2 / freq1 used in fixed multiple mode
+//extern float ratio3;  //ratio of freq3 / freq1 used in fixed multiple mode
+
+extern int LFO2Mult;
+extern int LFO2Div;
+
+extern int LFO3Mult;
+extern int LFO3Div;
+
+extern int Mode1Period;
 extern float swayScaled;
+extern float global_mult;
 
 #endif
