@@ -173,7 +173,7 @@ resetLEDs();
 VSSD();
 
 //start timer interrupt
-myTimer.begin(DACupdate, constants::interruptPeriod); //
+myTimer.begin(DACupdateMode0, constants::interruptPeriod); //
 
 amp1_a = constants::a_amp; //initial non-lin values amplitude pot scaling. these are global varibles because need to change depending on assignment
 amp1_b = constants::b_amp;
@@ -702,10 +702,10 @@ void checkBoth(){
       holdtime = 0;
 
       if (freqMode ==0)
-      myTimer.begin(DACupdate, constants::interruptPeriod);
+      myTimer.begin(DACupdateMode0, constants::interruptPeriod);
       else if (freqMode ==1)
       {
-        myTimer.begin(DACupdateMode2, (Mode1Period/1000));//start timer with different function attached, with adjusted interupt time.
+        myTimer.begin(DACupdateMode1, (Mode1Period/1000));//start timer with different function attached, with adjusted interupt time.
       }
     }
     
@@ -718,7 +718,7 @@ void updateInterval()
   myTimer.update(Mode1Period/1000); //Appears to be in seconds not ms in teensy code, not sure why.
 }
 
-void DACupdateMode2()
+void DACupdateMode1()
 {
 
     t += 1; //increment overall timer
@@ -1006,7 +1006,7 @@ else{ //write bypass values to MCP4922
   
 }
 
-void DACupdate(){ //Called by myTimer
+void DACupdateMode0(){ //Called by myTimer
   //increment t and reset each time it reaches period
   
   t1 += 1;
