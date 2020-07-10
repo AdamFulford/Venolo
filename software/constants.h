@@ -29,7 +29,7 @@ constexpr int DAC_max{4095};
 constexpr int DAC_min_out{0};
 constexpr int DAC_max_out{2500};
 
-constexpr int bypass_level{0};
+constexpr int bypass_level{290};
 
 constexpr int PWM_min{0};
 constexpr int PWM_max{250};
