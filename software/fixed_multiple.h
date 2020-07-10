@@ -7,18 +7,10 @@
 #include "LED_functions.h"
 #include "freq_update.h"
 
-int changeMode(int currentmode);
+void change_Mode();
 int Scale(int value, int range, float a, float b);
 
 void toggleEngage();
-
-extern long t1;
-extern long t2;
-extern long t3;
-
-extern bool direction1;
-extern bool direction2;
-extern bool direction3;
 
 extern int LFO1aMult;
 extern int LFO1aDiv;
@@ -29,5 +21,6 @@ extern int LFO1bDiv;
 extern bool IS_ON;
 
 extern float global_mult;
+extern int freqMode;
 
 #endif

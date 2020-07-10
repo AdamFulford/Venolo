@@ -1,6 +1,6 @@
 #include "fixed_multiple.h"
 
-int changeMode(int currentmode)
+void change_Mode()
 {
    //Set all LFO counters to 0 and directions to down.
    t1 = t2 = t3 = 0;  
@@ -17,7 +17,7 @@ int changeMode(int currentmode)
    delay(1000);
    allLEDsOFF();
    
-  if (currentmode == 1){  //back to normal mode
+  if (freqMode == 1){  //back to normal mode
      digitalWrite(engage_LED,HIGH);
      digitalWrite(midi_LED,HIGH);
      digitalWrite(engage_LED,HIGH);
@@ -60,9 +60,10 @@ int changeMode(int currentmode)
    updatefreq1(freq1scaled);
    updatefreq2(freq2scaled);
    updatefreq3(freq3scaled);
-     
-     
-     return 0; //switch to normal mode
+
+   freqMode = 0;
+   resetPhase();
+
   }
   else  //switch to fixed multiple mode
    digitalWrite(LFO2freq1_LED, HIGH);
@@ -100,16 +101,13 @@ int changeMode(int currentmode)
      freq2 = map(analogRead(freq2_pot),0,constants::in_max,0,constants::in_max);
      freq3 = map(analogRead(freq3_pot),0,constants::in_max,0,constants::in_max);
 
-     //update LFO2 and LFO3 period and waveinc:
+     //update LFOs:
      updatefreq1Mode1(freq1scaled);
      updatefreq2Mode1(freq2);
      updatefreq3Mode1(freq3);
      
-
-
-
-   return 1; //switch to fixed multiple mode
-  
+    freqMode = 1;
+    resetPhase();
 }
 
 

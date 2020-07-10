@@ -10,21 +10,6 @@ void updatefreq1(float freq1scaled)
     wave1aInc = float(constants::waveLength - 1)/period1a;
     wave1bInc = float(constants::waveLength - 1)/period1b;
 
-//Serial.print("freq1scaled: ");
-//Serial.println(freq1scaled);
-/*
-    if(freqMode ==1){
-      float freq2scaled{};
-      float freq3scaled{};
-      
-      freq2scaled = freq1scaled * ratio2;
-      updatefreq2(freq2scaled);
-
-      freq3scaled = freq1scaled * ratio3;
-      updatefreq3(freq3scaled);
-    }
-
-*/
 
 }
 
@@ -57,14 +42,45 @@ void updatefreq1Mode1(float freq1scaled)
 void updatefreq2Mode1(int freq2)
 {
 
-  LFO2Mult = constants::ratioMults[map(freq2,constants::in_min,constants::in_max,0,constants::numRatios - 1)];
-  LFO2Div = constants::ratioDivs[map(freq2,constants::in_min,constants::in_max,0,constants::numRatios - 1)];
- 
+  static int freq2last{2 * constants::in_max};
+
+  freq2 = map(freq2,constants::in_min,constants::in_max,0,constants::numRatios - 1);
+  
+  if(abs(freq2 - freq2last) > 0){
+    LFO2Mult = constants::ratioMults[freq2];
+    LFO2Div = constants::ratioDivs[freq2];
+    resetPhase();
+  }
+
+  freq2last = freq2;
 }
 
 void updatefreq3Mode1(int freq3)
 {
+  static int freq3last{2 * constants::in_max};
+  freq3 = map(freq3,constants::in_min,constants::in_max,0,constants::numRatios - 1);
+
+  if(abs(freq3 - freq3last) > 0){
+    LFO3Mult = constants::ratioMults[freq3];
+    LFO3Div = constants::ratioDivs[freq3];
+
+    resetPhase();
+  }
+
+  freq3last = freq3;
+}
+
+void resetPhase()
+{
+
+  direction1 = constants::down;
   
-  LFO3Mult = constants::ratioMults[map(freq3,constants::in_min,constants::in_max,0,constants::numRatios - 1)];
-  LFO3Div = constants::ratioDivs[map(freq3,constants::in_min,constants::in_max,0,constants::numRatios - 1)];
+  if(freqMode == 1){
+   direction2 = constants::down;
+   direction3 = constants::down;
+   t=0;
+   t2 = LFO2_offset;
+   t3 = LFO3_offset;
+  }
+    t1=0;
 }

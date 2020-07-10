@@ -109,10 +109,9 @@ int midi_matrix[9][4] = {  //min, max, current_value, pot_number
 int buttonState{};
 int tapSpeed{1}; //multiplier for tap frequency
 elapsedMillis holdtime; //times length both buttons are held
+elapsedMillis shiftTime;  //times length tap button is held
+bool shift{}; //0 = shift off, 1 = shift on
 int freqMode{};  //0 = normal, 1 = fixed multiple.
-
-//float ratio2{2.0};  //ratio of freq2 / freq1 used in fixed multiple mode
-//float ratio3{2.0};  //ratio of freq3 / freq1 used in fixed multiple mode
 
 int Mode1Period{};
 
@@ -129,6 +128,9 @@ int LFO2Div{1};
 
 int LFO3Mult{6};
 int LFO3Div{1};
+
+int LFO2_offset{};
+int LFO3_offset{};
 
 
 float global_mult{1.0/6.0}; //how many times faster than LFO1
@@ -193,8 +195,6 @@ MidiInit();
 
 }
 
-
- 
 void checkFreq() {
 
 int freq1Current{};
@@ -322,7 +322,6 @@ else if(freqMode ==1)
  
 }
 
-
 void  checkAmp(){
 int amp1Current{};
 int amp2Current{};
@@ -406,66 +405,77 @@ else{
 }
 
 void  checkMan(){
-int vol_manCurrent{};
-int pan_manCurrent{};
 
-if(midi_matrix[7][0] == midi_matrix[7][1]){   // if not set read analog input
-    
-    vol_manCurrent = map(analogRead(vol_pot),0,constants::in_max,0,constants::in_max);
-}
-else{
-    vol_manCurrent = midi_matrix[7][2];
-}
-
-if(midi_matrix[8][0] == midi_matrix[8][1]){   // if not set read analog input
-    
-  pan_manCurrent = map(analogRead(pan_pot),0,constants::in_max,constants::in_max,0);
-}
-else{
-    pan_manCurrent = midi_matrix[8][2];
-
-}
-
-//need new scale function here to have wide middle band
+  int vol_manCurrent{};
+  int pan_manCurrent{};
   
-  if (abs(vol_manCurrent-vol_man)>constants::vol_manTolerance){
-    //if reading from pot exceeds tolerance
-    vol_man = vol_manCurrent;
-    vol_manScaled = (vol_man /float(constants::in_max));  //range 0 to 1;
+  if(midi_matrix[7][0] == midi_matrix[7][1]){   // if not set read analog input
+      
+      vol_manCurrent = map(analogRead(vol_pot),0,constants::in_max,0,constants::in_max);
   }
-
- // Serial.print("pan_manCurrent = ");
- // Serial.println(pan_manCurrent);
-    
-  //call panAdjust(); //adjust current pan value to match pan Law
-  pan_manCurrent = panAdjust(pan_manCurrent);
-
-
-  //Serial.print("pan_manCurrent = ");
-  //Serial.println(pan_manCurrent);
-    
-  if (abs(pan_manCurrent-pan_man)>constants::pan_manTolerance){
-    //if reading from pot exceeds tolerance
-    float pan_manScaled{};
-    pan_man = pan_manCurrent;
-    pan_manScaled = ((pan_man / float(constants::in_max)) * 2) + (-1); //range -1 to 1 
-
-
-    if (pan_manScaled == 0.0) { 
-      pan_man_L = 1.0;
-      pan_man_R = 1.0;
-      } 
-    else if(pan_manScaled > 0.0){
-      pan_man_L = (1.0 - pan_manScaled);
-      pan_man_R = 1.0;  
-    }
-    else if (pan_manScaled < 0.0) {
-      pan_man_L = 1.0;
-      pan_man_R = (1.0 + pan_manScaled);  
-    }
+  else{
+      vol_manCurrent = midi_matrix[7][2];
   }
+  
+  if(midi_matrix[8][0] == midi_matrix[8][1]){   // if not set read analog input
+      
+    pan_manCurrent = map(analogRead(pan_pot),0,constants::in_max,constants::in_max,0);
+  }
+  else{
+      pan_manCurrent = midi_matrix[8][2];
+  }
+  
+  //need new scale function here to have wide middle band
+    
+    if (abs(vol_manCurrent-vol_man)>constants::vol_manTolerance){ //if reading from pot exceeds tolerance
+      vol_man = vol_manCurrent;
+      if(!shift){
+        vol_manScaled = (vol_man /float(constants::in_max));  //range 0 to 1;
+      }
+      else if(shift){
+        //update secondary function
+        LFO2_offset = map(vol_man,0,constants::in_max,0,constants::waveLength);
+        resetPhase();
+      }
 
-
+    }
+  
+   // Serial.print("pan_manCurrent = ");
+   // Serial.println(pan_manCurrent);
+      
+    //call panAdjust(); //adjust current pan value to match pan Law
+    pan_manCurrent = panAdjust(pan_manCurrent);
+  
+  
+    //Serial.print("pan_manCurrent = ");
+    //Serial.println(pan_manCurrent);
+      
+    if (abs(pan_manCurrent-pan_man)>constants::pan_manTolerance){ //if reading from pot exceeds tolerance
+      
+      pan_man = pan_manCurrent;
+      if(!shift){
+        float pan_manScaled{};
+        pan_manScaled = ((pan_man / float(constants::in_max)) * 2) + (-1); //range -1 to 1 
+  
+        if (pan_manScaled == 0.0) { 
+          pan_man_L = 1.0;
+          pan_man_R = 1.0;
+        } 
+        else if(pan_manScaled > 0.0){
+          pan_man_L = (1.0 - pan_manScaled);
+          pan_man_R = 1.0;  
+        }
+        else if (pan_manScaled < 0.0) {
+          pan_man_L = 1.0;
+          pan_man_R = (1.0 + pan_manScaled);  
+        }
+      }
+      else if(shift){
+       //update secondary function:
+       LFO3_offset = map(pan_man,0,constants::in_max,constants::waveLength,0);
+       resetPhase();
+      }
+    }
 }
 
 void checkAssign(){
@@ -616,6 +626,13 @@ void checkShape(){
       shape3_last = shape3Current;
       
   shape3 = map(shape3_last,0,constants::in_max,0,constants::numShapes - 1);
+/*
+  Serial.print("shape3Current = ");
+  Serial.println(shape3Current);
+  Serial.print("shape3 = ");
+  Serial.println(shape3);
+
+  */
   }
 
 
@@ -676,15 +693,21 @@ TAP.update(); //button constants::update
   if(TAP.fallingEdge()){
     tapSpeed = 1;
     tap_tempo();
-    
     buttonState = buttonState + 1;
-    if (buttonState ==3){ 
-      holdtime = 0; //reset timer
-    }
+    
+    if (buttonState == 3)
+      holdtime = 0; //reset hold timer
+
+    if (buttonState == 1)
+      shiftTime = 0;  //reset shift timer
+
   }
 
   if(TAP.risingEdge()){
     buttonState = buttonState - 1;
+    shift = false; //reset shift
+    //Serial.println("Stop Shifting");
+    //Serial.println(shift);
   }
 
 }
@@ -698,19 +721,28 @@ void checkBoth(){
       Serial.println("MODE SELECT!");
 
       myTimer.end();  //stop interrupt timer
-      freqMode = changeMode(freqMode);
+      change_Mode();
       holdtime = 0;
 
-      if (freqMode ==0)
+      //Serial.println(freqMode);
+
+      if (freqMode == 0)
       myTimer.begin(DACupdateMode0, constants::interruptPeriod);
       else if (freqMode ==1)
-      {
         myTimer.begin(DACupdateMode1, (Mode1Period/1000));//start timer with different function attached, with adjusted interupt time.
-      }
     }
     
   }
+
+  else if(buttonState ==1){
+    if (shiftTime >= constants::shiftWait){
+      shift = true;
+      //Serial.println("Shifting NOW!");
+      //Serial.println(shift);
+    }
+  }
 }
+
 
 
 void updateInterval()
@@ -730,8 +762,8 @@ void DACupdateMode1()
   //toggle direction of wave 1
   if(direction1 == constants::up){  //going up
 
-    if(t % LFO1aDiv == 0){
-           t1 += LFO1aMult;
+    if(t % LFO1aDiv == 0){    //apply clock multipliers and dividers for LFO1 going up
+      t1 += LFO1aMult;
     }
 
 //if we have overshot end of wavelength or global t = 0
@@ -743,8 +775,8 @@ void DACupdateMode1()
   
   else if(direction1 == constants::down){   
 
-        if(t % LFO1bDiv == 0){
-           t1 += LFO1bMult;
+    if(t % LFO1bDiv == 0){  //apply clock multipliers and dividers for LFO1 going down
+      t1 += LFO1bMult;
     }
 
    if (t1 > (constants::waveLength - 1)){  
@@ -758,14 +790,15 @@ void DACupdateMode1()
   }
 
 
- if(t % LFO2Div == 0){ 
+ if(t % LFO2Div == 0){  //apply clock multipliers and dividers for LFO2
         t2 += LFO2Mult;
  }
 
- if(t % LFO3Div == 0){ 
+ if(t % LFO3Div == 0){  //apply clock multipliers and dividers for LFO3
         t3 += LFO3Mult;
  }
- 
+
+
 
   //toggle direction of wave 2
   if(direction2 == constants::up){  //going up
@@ -797,12 +830,9 @@ void DACupdateMode1()
    }
   }
 
-  
-
 static int wave1Num{};
 static int wave2Num{};
 static int wave3Num{};
-
 
     if(direction1 == constants::up){ //going up
       wave1Num = t1;
@@ -832,40 +862,45 @@ static int wave3Num{};
 }
     }
 
-       if(direction1 == constants::down){  //going up
-  wave1Num = constants::waveLength - t1 - 1;
-  //read data from correct wave table for wave 1
-  switch (shape1b) {
-  case 0:  //sine wave
-    // statements
-    LFO1 = pgm_read_word_near(constants::sine + wave1Num);
-    break;
-  case 1:  //triangle wave
-    // statements
-    LFO1 = pgm_read_word_near(constants::triangle + wave1Num);
-    break;
-  case 2:  //square wave
-    // statements
-    LFO1 = pgm_read_word_near(constants::square + wave1Num);
-    break;
-  case 3: //qtr_sine_upr
-      LFO1 = pgm_read_word_near(constants::qtr_sine_upr + wave1Num);
-  break;
-  case 4: //qtr_sine_lwr
-      LFO1 = pgm_read_word_near(constants::qtr_sine_lwr + wave1Num);
-  break;
-  case 5: //inverted_sine
-      LFO1 = pgm_read_word_near(constants::inverted_sine + wave1Num);
-  break;  
-}
-    } 
+  if(direction1 == constants::down){  //going up
+    wave1Num = constants::waveLength - t1 - 1;
+    //read data from correct wave table for wave 1
+    switch (shape1b) {
+      case 0:  //sine wave
+        // statements
+        LFO1 = pgm_read_word_near(constants::sine + wave1Num);
+      break;
+      case 1:  //triangle wave
+        // statements
+        LFO1 = pgm_read_word_near(constants::triangle + wave1Num);
+      break;
+      case 2:  //square wave
+        // statements
+        LFO1 = pgm_read_word_near(constants::square + wave1Num);
+      break;
+      case 3: //qtr_sine_upr
+        LFO1 = pgm_read_word_near(constants::qtr_sine_upr + wave1Num);
+      break;
+      case 4: //qtr_sine_lwr
+        LFO1 = pgm_read_word_near(constants::qtr_sine_lwr + wave1Num);
+      break;
+      case 5: //inverted_sine
+        LFO1 = pgm_read_word_near(constants::inverted_sine + wave1Num);
+      break;  
+    }
+  } 
 
 
 if(direction2 == constants::up)
+  {
   wave2Num = t2;
+  }
 else if (direction2 == constants::down)
+{
   wave2Num = constants::waveLength - t2 - 1;
-  
+}
+
+
   switch (shape2) {
   case 0:  //sine wave
     // statements
@@ -911,7 +946,7 @@ else if (direction3 == constants::down)
     LFO3 = pgm_read_word_near(constants::square + wave3Num);
     break;
   case 3: //qtr_sine_upr
-      LFO2 = pgm_read_word_near(constants::qtr_sine_upr + wave3Num);
+      LFO3 = pgm_read_word_near(constants::qtr_sine_upr + wave3Num);
   break;
   case 4: //qtr_sine_lwr
       LFO3 = pgm_read_word_near(constants::qtr_sine_lwr + wave3Num);
@@ -1002,7 +1037,7 @@ else{ //write bypass values to MCP4922
 
   MCP4922_write(0, constants::bypass_level);
   MCP4922_write(1, constants::bypass_level);
-    }
+}
   
 }
 
@@ -1055,22 +1090,6 @@ void DACupdateMode0(){ //Called by myTimer
     direction3 = constants::up;  //set direction to up
    }
   }
-
-//phase correction in fixed multiple mode:
-if(freqMode == 1){
-  if(t1 == 0)
-  {
-    if ((abs(t2-t1) < constants::phaseCorrectTime) && (direction2 == direction1))
-    {
-      t2=0; //reset LFO2 timer to match
-    }
-    if ((abs(t3-t1) < constants::phaseCorrectTime) && (direction3 == direction1))
-    {
-      t3=0; //reset LFO3 timer to match
-    }
-  }
-
-}
 
 //wave indexes
 static int wave1Num{};
@@ -1299,8 +1318,8 @@ dac2_average = dac2_total / constants::numReadings;
 
 //write PWM values for LED output
 
-uint16_t PWM_L_value{map(dac1_average,constants::DAC_min,constants::DAC_max,constants::PWM_min,constants::PWM_max)};
-uint16_t PWM_R_value{map(dac2_average,constants::DAC_min,constants::DAC_max,constants::PWM_min,constants::PWM_max)};
+uint16_t PWM_L_value{map(dac2_average,constants::DAC_min,constants::DAC_max,constants::PWM_min,constants::PWM_max)};
+uint16_t PWM_R_value{map(dac1_average,constants::DAC_min,constants::DAC_max,constants::PWM_min,constants::PWM_max)};
 
 analogWrite(PWM_L,PWM_L_value);
 analogWrite(PWM_R,PWM_R_value);
@@ -1324,32 +1343,30 @@ else{ //write bypass values to MCP4922
 }
 
 void loop() {
-
-
-checkFreq();   //check freq inputs
-checkAmp();   // check amplitude inputs
-checkSway();  // check sway inputs
-checkShape(); //check wave shape inputs
-checkMan();  //manual vol and pan inputs
-
-checkTap();   //check tap tempo for freq1
-checkAssign(); //check assignment buttons
-checkMidi();  //check midi input
-checkEngage();  //check engage button
-checkBoth();
-
+  
+  checkFreq();   //check freq inputs
+  checkAmp();   // check amplitude inputs
+  checkSway();  // check sway inputs
+  checkShape(); //check wave shape inputs
+  checkMan();  //manual vol and pan inputs
+  
+  checkTap();   //check tap tempo for freq1
+  checkAssign(); //check assignment buttons
+  checkMidi();  //check midi input
+  checkEngage();  //check engage button
+  checkBoth();
 
 //Debug LFO shapes - delay will mess up midi input!
+/*
 
-
-//Serial.println(LFO1);
-//Serial.print(",");
-//Serial.print(LFO2);
-//Serial.print(",");
+Serial.println(LFO1);
+Serial.print(",");
+Serial.print(LFO2);
+Serial.print(",");
 //Serial.println(7*t);
-//Serial.print(",");
-//Serial.println(LFO3);
-//delay(5);
+Serial.print(",");
+Serial.println(LFO3);
+delay(5);
 
-
+*/
 }

@@ -36,6 +36,7 @@ constexpr int PWM_max{250};
 
 constexpr int numReadings{1}; //CONSTANT - smoothing amount - need to check this is working somehow
 constexpr int wait{10};  //button debounce wait time
+constexpr int shiftWait{500}; //wait before engaging shift function
 
 constexpr long samplerate{10000};  //1500Hz
 constexpr int interruptPeriod{(1.0/samplerate) * 1.0E6};  //in milliseconds
@@ -52,21 +53,13 @@ constexpr float a_freq{0.7};  //CONSTANT a, frequency pot scaling
 constexpr float b_freq{0.2};  //CONSTANT a, frequency pot scaling
 
 //Output Ranges
-/*
-constexpr float freq1_min{10.0};   //min LFO freq * 100 CONSTANT
-constexpr float freq1_max{1500.0}; //max LFO freq * 100 CONSTANT
-constexpr float freq2_min{2.0};
-constexpr float freq2_max{750.0};
-constexpr float freq3_min{2.0};
-constexpr float freq3_max{750.0};
-*/
+
 constexpr float freq1_min{0.1};   //min LFO freq 
 constexpr float freq1_max{15.0}; //max LFO freq 
 constexpr float freq2_min{0.02};
 constexpr float freq2_max{7.5};
 constexpr float freq3_min{0.02};
 constexpr float freq3_max{7.5};
-
 
 constexpr float sway_min{0.05};   //min sway value CONSTANT
 constexpr float sway_max{0.95}; //max sway value CONSTANT
@@ -110,9 +103,9 @@ constexpr bool up{0}; //CONSTANT
 constexpr bool down{1}; //CONSTANT
 
 //fixed multiple constants
-constexpr int numRatios{8};  //number of settings available
-constexpr int ratioMults[numRatios] = {1, 1,  1,  1, 3, 4, 6, 8,}; //needs to be *6
-constexpr int ratioDivs[numRatios] =  {6, 4,  2,  1, 1, 1, 1, 1,};
+constexpr int numRatios{10};  //number of settings available
+constexpr int ratioMults[numRatios] = {1, 1,  1,  1, 3, 4, 6, 8, 12, 18}; //needs to be *6
+constexpr int ratioDivs[numRatios] =  {6, 4,  2,  1, 1, 1, 1, 1, 1,  1};
 constexpr int phaseCorrectTime{250};
 
 constexpr int numSwaySettings{9};

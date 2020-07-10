@@ -12,6 +12,8 @@ void updatefreq1Mode1(float freq1scaled);
 void updatefreq2Mode1(int freq2);
 void updatefreq3Mode1(int freq3);
 
+void resetPhase();
+
 extern void updateInterval();
 
 
@@ -26,10 +28,16 @@ extern float wave1bInc;  //increment down used in checkFreq(), checkSway(), chec
 extern float wave2Inc;
 extern float wave3Inc; 
 
+extern bool direction1;
+extern bool direction2;
+extern bool direction3;
+
 extern int freqMode;  //0 = normal, 1 = fixed multiple.
 
 //extern float ratio2;  //ratio of freq2 / freq1 used in fixed multiple mode
 //extern float ratio3;  //ratio of freq3 / freq1 used in fixed multiple mode
+
+
 
 extern int LFO2Mult;
 extern int LFO2Div;
@@ -40,5 +48,13 @@ extern int LFO3Div;
 extern int Mode1Period;
 extern float swayScaled;
 extern float global_mult;
+
+extern int LFO2_offset;
+extern int LFO3_offset;
+
+extern long t;
+extern long t1;
+extern long t2;
+extern long t3;
 
 #endif
