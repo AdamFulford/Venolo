@@ -12,7 +12,7 @@ LFO1 always affects the volume. Controls are:
 - Frequency: Fully anti-clockwise is the slowest speed, fully clockwise is the fastest speed.
 - Amplitude: Fully anti-clockwise is no volume modulation, fully clockwise is maximum modulation.
 - Sway: Controls the ratio of time in the 'attack' phase and the 'decay' phase of the volume modulation waveshape. Fully anti- clockwise gives a very short attack and slow attack, much like the vintage Vox note repeater effect. Fully clockwise has a slow attack and fast decay, sounding like reverse attack, especially at slower frequencies. 12 o'clock gives a symmetrical waveshape.
-- Attack phase waveshape: Choose between sine, triangle and square (more to be added!)
+- Attack phase waveshape: Choose between sine, triangle, square, first 1/2 sine, second 1/2 sine, and inverted sine.
 - Decay phase waveshape: Same as attack phase waveshape, but for the decay phase.
 
 LFO2 can be assigned to 1 of 4 functions (or turned off), by toggling the LFO2 assign switch to cycle through the settings:
