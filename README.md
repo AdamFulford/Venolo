@@ -53,6 +53,18 @@ Midi assign button: Can be used to map multiple controls to respond to an expres
 To clear all midi expression mappings, tap the midi assign button without touching any of the knobs.
 NB. waveshape controls cannot be mapped to midi.
 
-The Left footswitch is a tap tempo for LFO1. One tap will reset LFO1 to it's peak position (i.e. max volume). Subsequent taps will vary LFO1's frequency to match the spacing between taps. Tempo can also be tapped in by sending a value of 127 to midi CC#2 (channel 5).
+The Left footswitch is a tap tempo for LFO1. One tap will reset LFO1 to it's peak position (i.e. max volume). Subsequent taps will vary LFO1's frequency to match the spacing between taps. Tempo can also be tapped in by sending a value of 127 to midi CC#2 (channel 5). Additionally, a tempo twice the tap speed can be tapped in by sending CC#3.
 
 The Right footswitch toggles the tremolo effect on and off. When the engage LED is lit the tremolo is active, and when it is off the pedal outputs the signal at the bypass volume. NB. the LEDs above the tap tempo footswitch will continue to blink, to give visual feedback as to the frequency and waveshape assigned, even when it is not affecting the guitar signal.
+
+Fixed Multiple Mode:
+
+To enter fixed multiple mode hold down the tap and engage footswitches for 2 seconds. All LEDs will blink, and then display which mode you are changing to - LEDs on the right means Fixed Multple Mode, LEDs on the left means returning to default mode.
+
+In fixed multiple mode, LFO2 and LFO3 frequencies are exact multiples (or ratios) of LFO1, with the following multiples selectable using the LFO2 and LFO3 frequency knobs, from slowest (fully counterclockwise) to fastest (fully clockwise): 1/36, 1/24, 1/12, 1/6, 1/2, 2/3, 1, 3/2, 2, 3.
+
+By default, LFO2 and LFO3 will be in phase with LFO1, however you can alter the phase offset for each LFO by using the alternate functions of the volume and pan controls: Hold down the tap button (wait for 200ms), and whilst still holding tap adjust the phase offset from in phase (fully counter clockwise) to 180 degrees out of phase (fully counter clockwise). Release the tap button to return to normal function.
+
+By selecting different ratios, waveshapes and phase offsets for each LFO, it is possible to create complex and interesting rhythmic patterns, which stay in sync with LFO1 (this can still be altered on the fly using tap tempo, with the LFO1 frequency control). Use the amplitude control to blend the amount of each LFO, allowing different accents in the rhythm.
+
+NB. in fixed multiple mode LFO2 cannot be assigned to modulate the LFO1 or LFO3 frequencies. These modes will result in LFO2 not being assigned to anything.
